@@ -50,6 +50,7 @@ function addname(name) {
 }
 */
 
+/*
 const addNoteHandler = (request, h) => {
   const { title, tags, body } = request.payload;
 
@@ -113,7 +114,59 @@ const addNoteHandler = (request, h) => {
     response.code(500);
     return response;
   }
-  */
+};
+*/
+
+const addNoteHandler = (request, h) => {
+  const { title, tags, body } = request.payload;
+
+  console.log("Payload diterima:", request.payload); // Debugging
+
+  if (!title || !tags || !body) {
+    const response = h.response({
+      status: "fail",
+      message: "Gagal menambahkan catatan. Pastikan semua data terisi.",
+    });
+    response.code(400);
+    return response;
+  }
+
+  const id = nanoid(16);
+  const createdAt = new Date().toISOString();
+  const updatedAt = createdAt;
+
+  const newNote = {
+    title,
+    tags,
+    body,
+    id,
+    createdAt,
+    updatedAt,
+  };
+
+  notes.push(newNote);
+  console.log("Data yang disimpan:", newNote); // Debugging
+
+  const isSuccess = notes.some((note) => note.id === id);
+
+  if (isSuccess) {
+    const response = h.response({
+      status: "success",
+      message: "Catatan berhasil ditambahkan",
+      data: {
+        noteId: id,
+      },
+    });
+    response.code(201);
+    return response;
+  }
+
+  const response = h.response({
+    status: "fail",
+    message: "Catatan gagal ditambahkan",
+  });
+  response.code(500);
+  return response;
 };
 
 const getAllNotesHandler = () => ({
